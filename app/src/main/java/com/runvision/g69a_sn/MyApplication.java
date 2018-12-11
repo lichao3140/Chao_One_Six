@@ -80,7 +80,7 @@ public class MyApplication extends Application {
             Log.i("Gavin_1114","路径ff："+ff);
         }
         FileUtils.copyFile(ff,Environment.getExternalStorageDirectory() + "/FaceAndroid/.asf_install.dat");
-        FileUtils.copyFile(Environment.getExternalStorageDirectory() + "/FaceAndroid/.asf_install.dat",ff);
+        FileUtils.copyFile(Environment.getExternalStorageDirectory() + "/FaceAndroid/.asf_install.dat", getFilesDir().getAbsolutePath() + File.separator + ".asf_install.dat");
 
         int ret = mFaceLibCore.initLib(context);
         if (ret == 0) {
@@ -95,11 +95,6 @@ public class MyApplication extends Application {
 
         loadTemper();
         SPUtil.putString(Const.KEY_EDITION, "(V "+LogToFile.getAppVersionName(getContext())+")");
-
-
-
-       // FileUtils.copyFilesFromAssets(context,"111.txt",Environment.getExternalStorageDirectory() + "/FaceAndroid","111.txt");
-
     }
 
 
@@ -136,15 +131,6 @@ public class MyApplication extends Application {
         }
         return serial;
     }
-
-   // private void initLeakCanary() {
-
-    //    if (LeakCanary.isInAnalyzerProcess(this)) {
-    //        return;
-   //     }
-   //     LeakCanary.install(this);
-   // }
-
 
     public void init() {
         // 设置该CrashHandler为程序的默认处理器

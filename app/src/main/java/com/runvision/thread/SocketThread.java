@@ -117,6 +117,7 @@ public class SocketThread extends Thread {
                     case Const.NMSG_FLIB_ADD:
                         MyThread th = new MyThread(sb.toString());
                         th.start();
+                        Const.VMS_BATCH_IMPORT_TEMPLATE = true;
                         break;
                     default:
                         break;
