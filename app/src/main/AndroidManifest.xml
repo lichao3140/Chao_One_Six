@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.runvision.g69a_sn">
+    package="com.runvision.g69a_sn">
 
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
@@ -17,31 +17,35 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
-        android:name="com.runvision.g69a_sn.MyApplication"
+        android:name=".MyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:largeHeap="true"
         android:theme="@style/translucent">
-        <activity android:name="com.runvision.g69a_sn.UpdateActivity">
+        <activity android:name=".UpdateActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <service android:name="com.runvision.webcore.CoreService"/>
+        <service android:name="com.runvision.webcore.CoreService" />
 
-        <activity android:name=".RegisterActivity"/>
+        <activity android:name=".RegisterActivity" />
+        <activity android:name=".MainActivity" />
 
-        <activity android:name="com.runvision.g69a_sn.MainActivity"/>
+        <activity
+            android:name=".MyRegisterActivity"
+            android:theme="@style/AppTheme"/>
+
         <receiver
             android:name="com.runvision.broadcast.BootBroadcastReceiver"
             android:enabled="true"
-            android:exported="true" >
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>

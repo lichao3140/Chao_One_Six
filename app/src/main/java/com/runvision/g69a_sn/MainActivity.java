@@ -2125,7 +2125,7 @@ public class MainActivity extends Activity implements NetWorkStateReceiver.INetS
             @Override
             public void callback(String password) {
                 if ((SPUtil.getString(Const.KEY_DEVICE_PASS, Const.DEVICE_PASS).equals(password))||("666666".equals(password))) {
-                    startActivity(new Intent(MainActivity.this, RegisterActivity.class));
+                    startActivity(new Intent(MainActivity.this, MyRegisterActivity.class));
                    // Toast.makeText(MainActivity.this, "密码为：" + password, Toast.LENGTH_SHORT).show();
                     payDialog.dismiss();
 

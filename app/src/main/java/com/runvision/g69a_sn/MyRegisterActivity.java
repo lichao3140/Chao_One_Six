@@ -1,4 +1,4 @@
-package com.runvision.frament;
+package com.runvision.g69a_sn;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -7,11 +7,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
+import android.support.v4.app.FragmentActivity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -19,33 +16,23 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.arcsoft.face.FaceFeature;
 import com.arcsoft.face.FaceInfo;
 import com.runvision.bean.AppData;
 import com.runvision.core.Const;
 import com.runvision.db.User;
-import com.runvision.g69a_sn.MyApplication;
-import com.runvision.g69a_sn.R;
 import com.runvision.myview.MyCameraSuf;
 import com.runvision.thread.FaceFramTask;
 import com.runvision.utils.CameraHelp;
 import com.runvision.utils.DateTimeUtils;
 import com.runvision.utils.FileUtils;
 import com.runvision.utils.IDUtils;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+public class MyRegisterActivity extends FragmentActivity implements View.OnClickListener {
 
-/**
- * Created by Administrator on 2018/7/9.
- */
-
-public class FaceRegisterFrament extends Fragment implements View.OnClickListener {
-    private View view;
-    private Context mContext;
     private String TAG = this.getClass().getSimpleName();
     private Button btn_openCamera, addFace, btn_startImport, btn_close;
     private ImageView imageView;
@@ -60,19 +47,13 @@ public class FaceRegisterFrament extends Fragment implements View.OnClickListene
 
     private FaceFramTask faceDetectTask = null;
 
-    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        mContext = getContext();
-        if (null == view) {
-            view = inflater.inflate(R.layout.faceregisterframent, container, false);
-            initView();
-        }
-        updateView();
-        stratThread();
-        return view;
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_my_register);
+        initView();
+        open();
     }
-
 
     private void stratThread() {
         if (faceDetectTask != null) {
@@ -85,19 +66,19 @@ public class FaceRegisterFrament extends Fragment implements View.OnClickListene
     }
 
     private void initView() {
-        btn_openCamera = (Button) view.findViewById(R.id.btn_openPhone);
+        btn_openCamera = (Button) findViewById(R.id.btn_cap);
         btn_openCamera.setOnClickListener(this);
-        imageView = (ImageView) view.findViewById(R.id.choose_bitmap);
-        //  btn_startImport = view.findViewById(R.id.btn_startImport);
+        imageView = (ImageView) findViewById(R.id.choose_bitmap);
+        //  btn_startImport = findViewById(R.id.btn_startImport);
         //  btn_startImport.setOnClickListener(this);
-        reg_chooseOneImage = (LinearLayout) view.findViewById(R.id.reg_chooseOneImage);
-        name = (TextView) view.findViewById(R.id.reg_name);
-        phone = (TextView) view.findViewById(R.id.reg_phone);
-        type = (Spinner) view.findViewById(R.id.reg_type);
+        reg_chooseOneImage = (LinearLayout) findViewById(R.id.reg_chooseOneImage);
+        name = (TextView) findViewById(R.id.reg_name);
+        phone = (TextView) findViewById(R.id.reg_phone);
+        type = (Spinner) findViewById(R.id.reg_type);
         type.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                String cardNumber = FaceRegisterFrament.this.getResources().getStringArray(R.array.user_type)[i];
+                String cardNumber = MyRegisterActivity.this.getResources().getStringArray(R.array.user_type)[i];
                 System.out.println(cardNumber);
                 choose_type = cardNumber;
             }
@@ -107,22 +88,22 @@ public class FaceRegisterFrament extends Fragment implements View.OnClickListene
 
             }
         });
-        addFace = (Button) view.findViewById(R.id.reg_addFace);
+        addFace = (Button) findViewById(R.id.reg_addFace);
         addFace.setOnClickListener(this);
-        reg_MyCameraSuf = (MyCameraSuf) view.findViewById(R.id.reg_myCameraSuf);
+        reg_MyCameraSuf = (MyCameraSuf) findViewById(R.id.reg_myCameraSuf);
         reg_MyCameraSuf.setCameraType(1);
         reg_MyCameraSuf.openCamera();
-        btn_close = view.findViewById(R.id.reg_close);
+        btn_close = findViewById(R.id.reg_close);
         btn_close.setOnClickListener(this);
 
-        age = (TextView) view.findViewById(R.id.reg_age);
-        idnum = (TextView) view.findViewById(R.id.reg_idnum);
+        age = (TextView) findViewById(R.id.reg_age);
+        idnum = (TextView) findViewById(R.id.reg_idnum);
 
-        sex = (Spinner) view.findViewById(R.id.reg_sex);
+        sex = (Spinner) findViewById(R.id.reg_sex);
         sex.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                String sexNumber = FaceRegisterFrament.this.getResources().getStringArray(R.array.user_sex)[i];
+                String sexNumber = MyRegisterActivity.this.getResources().getStringArray(R.array.user_sex)[i];
                 System.out.println(sexNumber);
                 choose_sex = sexNumber;
             }
@@ -139,7 +120,7 @@ public class FaceRegisterFrament extends Fragment implements View.OnClickListene
         updateView();
         stratThread();
         if (reg_MyCameraSuf == null) {
-            reg_MyCameraSuf = (MyCameraSuf) view.findViewById(R.id.reg_myCameraSuf);
+            reg_MyCameraSuf = (MyCameraSuf) findViewById(R.id.reg_myCameraSuf);
         }
         reg_MyCameraSuf.setCameraType(1);
         reg_MyCameraSuf.openCamera();
@@ -162,7 +143,7 @@ public class FaceRegisterFrament extends Fragment implements View.OnClickListene
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.btn_openPhone:
+            case R.id.btn_cap:
                 openCamera();
                 break;
 
@@ -174,13 +155,12 @@ public class FaceRegisterFrament extends Fragment implements View.OnClickListene
             //    break;
             case R.id.reg_close:
                 close();
-                getActivity().finish();
+                finish();
                 break;
             default:
                 break;
         }
     }
-
 
     private void openCamera() {
         if (!Const.is_regFace) {
@@ -229,7 +209,7 @@ public class FaceRegisterFrament extends Fragment implements View.OnClickListene
 
     private void addFace() {
         if (reg_bmp == null) {
-            Toast.makeText(mContext, "图片不能为空", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MyRegisterActivity.this, "图片不能为空", Toast.LENGTH_SHORT).show();
             return;
         }
         String userName = name.getText().toString().trim();
@@ -237,23 +217,23 @@ public class FaceRegisterFrament extends Fragment implements View.OnClickListene
         String userage = age.getText().toString().trim();
         String useridnum = idnum.getText().toString().trim();
         if (userName.equals("")) {
-            Toast.makeText(mContext, "请输入名字", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MyRegisterActivity.this, "请输入名字", Toast.LENGTH_SHORT).show();
             return;
         }
         if (userPhone.equals("")) {
-            Toast.makeText(mContext, "请输入工号", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MyRegisterActivity.this, "请输入工号", Toast.LENGTH_SHORT).show();
             return;
         }
         if (userage.equals("")) {
-            Toast.makeText(mContext, "请输入年龄", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MyRegisterActivity.this, "请输入年龄", Toast.LENGTH_SHORT).show();
             return;
         } else if ((0 >= Integer.parseInt(userage)) && (Integer.parseInt(userage) >= 150)) {
-            Toast.makeText(mContext, "输入年龄范围在0-150", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MyRegisterActivity.this, "输入年龄范围在0-150", Toast.LENGTH_SHORT).show();
             return;
         }
 
         if (useridnum.equals("")) {
-            Toast.makeText(mContext, "请输入证件号", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MyRegisterActivity.this, "请输入证件号", Toast.LENGTH_SHORT).show();
             return;
         }
         String time = DateTimeUtils.parseDataTimeToFormatString(new Date());
@@ -270,10 +250,10 @@ public class FaceRegisterFrament extends Fragment implements View.OnClickListene
             //添加
             int id = MyApplication.faceProvider.addUserOutId(user);
             //  System.out.println("add id:" + id);
-            Toast.makeText(mContext, "添加成功", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MyRegisterActivity.this, "添加成功", Toast.LENGTH_SHORT).show();
         } else {
             // MyApplication.faceProvider.deleteUserById(id);
-            Toast.makeText(mContext, "添加失败", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MyRegisterActivity.this, "添加失败", Toast.LENGTH_SHORT).show();
 
         }
 
@@ -312,4 +292,9 @@ public class FaceRegisterFrament extends Fragment implements View.OnClickListene
         return generateTemplate;
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        close();
+    }
 }
