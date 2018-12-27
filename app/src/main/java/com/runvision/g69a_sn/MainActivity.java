@@ -115,7 +115,7 @@ public class MainActivity extends Activity implements NetWorkStateReceiver.INetS
     private ImageView faceBmp_view, cardBmp_view, idcard_Bmp, isSuccessComper;
     private TextView card_name, card_sex, card_nation, name, year, month, day, addr, cardNumber, version;
 
-    private ImageView home_set;
+    private ImageView home_set, home_register;
 
 
     private View pro_xml;//刷卡标记
@@ -798,14 +798,11 @@ public class MainActivity extends Activity implements NetWorkStateReceiver.INetS
         socket_status = findViewById(R.id.socket_status);
         showHttpUrl = findViewById(R.id.showHttpUrl);
 
-        home_set = (ImageView) findViewById(R.id.home_set);
-        home_set.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                createPayDialog();
-              //  startActivity(new Intent(MainActivity.this, RegisterActivity.class));
-            }
-        });
+        home_set = findViewById(R.id.home_set);
+        home_set.setOnClickListener(view -> createPayDialog("set"));
+
+        home_register = findViewById(R.id.home_reg);
+        home_register.setOnClickListener(view -> createPayDialog("reg"));
     }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     private void stratThread() {
@@ -2117,22 +2114,20 @@ public class MainActivity extends Activity implements NetWorkStateReceiver.INetS
     }
 
 
-    void createPayDialog() {
-
+    void createPayDialog(String str) {
         final PayDialog payDialog = new PayDialog(this);
-       // payDialog.setMoney(520);
-        payDialog.setPasswordCallback(new PayDialog.PasswordCallback() {
-            @Override
-            public void callback(String password) {
-                if ((SPUtil.getString(Const.KEY_DEVICE_PASS, Const.DEVICE_PASS).equals(password))||("666666".equals(password))) {
+        payDialog.setPasswordCallback(password -> {
+            if ((SPUtil.getString(Const.KEY_DEVICE_PASS, Const.DEVICE_PASS).equals(password))||("666666".equals(password))) {
+                if (str.equals("reg")) {
                     startActivity(new Intent(MainActivity.this, MyRegisterActivity.class));
-                   // Toast.makeText(MainActivity.this, "密码为：" + password, Toast.LENGTH_SHORT).show();
                     payDialog.dismiss();
-
-                } else {
-                    payDialog.clearPasswordText();
-                    Toast.makeText(MainActivity.this, "密码为错误，请重试", Toast.LENGTH_SHORT).show();
+                } else if (str.equals("set")) {
+                    startActivity(new Intent(MainActivity.this, MySettingActivity.class));
+                    payDialog.dismiss();
                 }
+            } else {
+                payDialog.clearPasswordText();
+                Toast.makeText(MainActivity.this, "密码为错误，请重试", Toast.LENGTH_SHORT).show();
             }
         });
         payDialog.clearPasswordText();

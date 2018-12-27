@@ -42,6 +42,10 @@
             android:name=".MyRegisterActivity"
             android:theme="@style/AppTheme"/>
 
+        <activity
+            android:name=".MySettingActivity"
+            android:theme="@style/AppTheme"/>
+
         <receiver
             android:name="com.runvision.broadcast.BootBroadcastReceiver"
             android:enabled="true"
