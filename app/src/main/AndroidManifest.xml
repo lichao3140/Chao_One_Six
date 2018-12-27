@@ -36,7 +36,10 @@
         <service android:name="com.runvision.webcore.CoreService" />
 
         <activity android:name=".RegisterActivity" />
-        <activity android:name=".MainActivity" />
+
+        <activity
+            android:name=".MainActivity"
+            android:theme="@style/AppTheme"/>
 
         <activity
             android:name=".MyRegisterActivity"
@@ -44,6 +47,7 @@
 
         <activity
             android:name=".MySettingActivity"
+            android:windowSoftInputMode="adjustUnspecified|stateHidden"
             android:theme="@style/AppTheme"/>
 
         <receiver

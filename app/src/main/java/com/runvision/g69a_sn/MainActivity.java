@@ -1,7 +1,6 @@
 package com.runvision.g69a_sn;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -18,8 +17,11 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -33,6 +35,7 @@ import com.arcsoft.face.FaceFeature;
 import com.arcsoft.face.FaceInfo;
 import com.arcsoft.face.FaceSimilar;
 import com.arcsoft.face.LivenessInfo;
+import com.mylhyl.circledialog.CircleDialog;
 import com.runvision.bean.AppData;
 import com.runvision.bean.FaceInfoss;
 import com.runvision.bean.ImageStack;
@@ -68,7 +71,6 @@ import com.zkteco.android.biometric.module.idcard.IDCardReader;
 import com.zkteco.android.biometric.module.idcard.IDCardReaderFactory;
 import com.zkteco.android.biometric.module.idcard.exception.IDCardReaderException;
 import com.zkteco.android.biometric.module.idcard.meta.IDCardInfo;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -85,10 +87,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import android_serialport_api.SerialPort;
 
-public class MainActivity extends Activity implements NetWorkStateReceiver.INetStatusListener, View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements NetWorkStateReceiver.INetStatusListener, View.OnClickListener {
 
     public static Context mContext;
     //private ComperThread mComperThread;//1:n比对线程
@@ -2119,7 +2120,10 @@ public class MainActivity extends Activity implements NetWorkStateReceiver.INetS
 
     }
 
-
+    /**
+     * 密码对话框
+     * @param str
+     */
     void createPayDialog(String str) {
         final PayDialog payDialog = new PayDialog(this);
         payDialog.setPasswordCallback(password -> {
@@ -2140,5 +2144,65 @@ public class MainActivity extends Activity implements NetWorkStateReceiver.INetS
         payDialog.show();
     }
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+            showTipExit();
+            isOpenOneVsMore = false;
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    /**
+     * 返回退出
+     */
+    private int time = 3;
+    private DialogFragment dialogFragment;
+    private Handler handler;
+    private Runnable runnable;
+
+    private void showTipExit() {
+        time = 3;
+        CircleDialog.Builder builder = new CircleDialog.Builder()
+                .setTitle("人脸识别终端")
+                .setText("是否退出应用?")
+                .configPositive(params -> params.disable = true)
+                .setPositive("确定(" + time + "s)", v -> application.finishActivity())
+                .setNegative("取消", v -> isOpenOneVsMore = true);
+
+        builder.setOnDismissListener(dialog -> removeRunnable());
+        dialogFragment = builder.show(getSupportFragmentManager());
+
+        handler = new Handler();
+        runnable = new Runnable() {
+            @Override
+            public void run() {
+                builder.configPositive(params -> {
+                    --time;
+                    params.text = "确定(" + time + "s)";
+                    if (time == 0) {
+                        params.disable = false;
+                        params.text = "确定";
+                    }
+                }).create();
+
+                if (time == 0)
+                    handler.removeCallbacks(this);
+                else
+                    handler.postDelayed(this, 1000);
+
+            }
+        };
+        handler.postDelayed(runnable, 1000);
+    }
+
+    private void removeRunnable() {
+        if (handler != null) {
+            handler.removeCallbacks(runnable);
+        }
+        handler = null;
+        runnable = null;
+    }
 
 }
