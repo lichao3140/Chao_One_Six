@@ -217,17 +217,14 @@ public class MyRegisterActivity extends FragmentActivity implements View.OnClick
 
 
     public void updateView() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (flag) {
-                    if (AppData.getAppData().getFlag() == Const.FLAG_CLEAN) {
-                        continue;
-                    }
-                    handler.sendEmptyMessage(AppData.getAppData().getFlag());
-                    AppData.getAppData().setFlag(Const.FLAG_CLEAN);
-
+        new Thread(() -> {
+            while (flag) {
+                if (AppData.getAppData().getFlag() == Const.FLAG_CLEAN) {
+                    continue;
                 }
+                handler.sendEmptyMessage(AppData.getAppData().getFlag());
+                AppData.getAppData().setFlag(Const.FLAG_CLEAN);
+
             }
         }).start();
     }

@@ -30,8 +30,7 @@ public class MySettingActivity extends FragmentActivity implements View.OnClickL
     private TextView threshold_1,threshold_n,wait_for_time,open_time,device_ip,vms_ip,vms_port,vms_uername,vms_password,version,device_pass;
     private CheckBox cb_choice,cb_1_1open,cb_1_Nopen;
     private Spinner Preservation_time;
-    private Button btn_Sure,btn_Refresh;
-    private Context mContext;
+    private Button btn_Sure,btn_Refresh, btn_Back;
     private int preservation_day;
 
     @Override
@@ -47,52 +46,46 @@ public class MySettingActivity extends FragmentActivity implements View.OnClickL
     }
 
     private void initView() {
+        device_pass= findViewById(R.id.device_pass);
+        version= findViewById(R.id.version);
+        threshold_1= findViewById(R.id.threshold_1);
+        threshold_n= findViewById(R.id.threshold_n);
+        wait_for_time= findViewById(R.id.wait_for_time);
+        open_time= findViewById(R.id.open_time);
+        device_ip= findViewById(R.id.device_ip);
+        vms_ip= findViewById(R.id.vms_ip);
+        vms_port= findViewById(R.id.vms_port);
+        vms_uername= findViewById(R.id.vms_uername);
+        vms_password= findViewById(R.id.vms_password);
 
-        device_pass= (TextView)findViewById(R.id.device_pass);
+        cb_choice= findViewById(R.id.cb_choice);
+        cb_1_1open= findViewById(R.id.cb_1_1open);
+        cb_1_Nopen= findViewById(R.id.cb_1_Nopen);
 
-        version=(TextView)findViewById(R.id.version);
-        threshold_1=(TextView)findViewById(R.id.threshold_1);
-        threshold_n=(TextView)findViewById(R.id.threshold_n);
-        wait_for_time=(TextView)findViewById(R.id.wait_for_time);
-        open_time=(TextView)findViewById(R.id.open_time);
-        device_ip=(TextView)findViewById(R.id.device_ip);
-        vms_ip=(TextView)findViewById(R.id.vms_ip);
-        vms_port=(TextView)findViewById(R.id.vms_port);
-        vms_uername=(TextView)findViewById(R.id.vms_uername);
-        vms_password=(TextView)findViewById(R.id.vms_password);
-
-        cb_choice=(CheckBox)findViewById(R.id.cb_choice);
-        cb_1_1open=(CheckBox)findViewById(R.id.cb_1_1open);
-        cb_1_Nopen=(CheckBox)findViewById(R.id.cb_1_Nopen);
-
-        btn_Sure=(Button)findViewById(R.id.btn_Sure);
+        btn_Sure= findViewById(R.id.btn_Sure);
         btn_Sure.setOnClickListener(this);
 
-        btn_Refresh=(Button)findViewById(R.id.btn_Refresh);
+        btn_Refresh= findViewById(R.id.btn_Refresh);
         btn_Refresh.setOnClickListener(this);
 
-        Preservation_time = (Spinner)findViewById(R.id.Preservation_time);
+        btn_Back = findViewById(R.id.btn_Back);
+        btn_Back.setOnClickListener(this);
+
+        Preservation_time = findViewById(R.id.Preservation_time);
         Preservation_time.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 String sexNumber = MySettingActivity.this.getResources().getStringArray(R.array.user_time)[i];
                 System.out.println(sexNumber);
-                if(sexNumber.equals("120天"))
-                {
+                if(sexNumber.equals("120天")) {
                     preservation_day=120;
-                }
-                else if(sexNumber.equals("90天"))
-                {
+                } else if(sexNumber.equals("90天")) {
                     preservation_day=90;
-                }else if(sexNumber.equals("60天"))
-                {
+                } else if(sexNumber.equals("60天")) {
                     preservation_day=60;
-                }
-                else if(sexNumber.equals("30天"))
-                {
+                } else if(sexNumber.equals("30天")) {
                     preservation_day=30;
                 }
-
             }
 
             @Override
@@ -115,46 +108,34 @@ public class MySettingActivity extends FragmentActivity implements View.OnClickL
         device_pass.setText(SPUtil.getString(Const.KEY_DEVICE_PASS, Const.DEVICE_PASS));
 
         //Preservation_time.set(SPUtil.getInt(Const.KEY_PRESERVATION_DAY,90));
-        if(SPUtil.getInt(Const.KEY_PRESERVATION_DAY,90)==120)
-        {
+        if(SPUtil.getInt(Const.KEY_PRESERVATION_DAY,90)==120) {
             Preservation_time.setSelection(0);
         }
         else if(SPUtil.getInt(Const.KEY_PRESERVATION_DAY,90)==90) {
             Preservation_time.setSelection(1);
-        }else if(SPUtil.getInt(Const.KEY_PRESERVATION_DAY,90)==60)
-        {
+        } else if(SPUtil.getInt(Const.KEY_PRESERVATION_DAY,90)==60) {
             Preservation_time.setSelection(2);
-        }else if(SPUtil.getInt(Const.KEY_PRESERVATION_DAY,90)==30)
-        {
+        } else if(SPUtil.getInt(Const.KEY_PRESERVATION_DAY,90)==30) {
             Preservation_time.setSelection(2);
         }
         //活体
-        if(SPUtil.getBoolean(Const.KEY_ISOPENLIVE, Const.OPEN_LIVE)==true)
-        {
+        if(SPUtil.getBoolean(Const.KEY_ISOPENLIVE, Const.OPEN_LIVE)==true) {
             cb_choice.setChecked(true);
-        }
-        else
-        {
+        } else {
             cb_choice.setChecked(false);
         }
 
         //1:1
-        if(SPUtil.getBoolean(Const.KEY_ISOPEN1_1, Const.OPEN_1_1)==true)
-        {
+        if(SPUtil.getBoolean(Const.KEY_ISOPEN1_1, Const.OPEN_1_1)==true) {
             cb_1_1open.setChecked(true);
-        }
-        else
-        {
+        } else {
             cb_1_1open.setChecked(false);
         }
 
         //1:n
-        if(SPUtil.getBoolean(Const.KEY_ISOPEN1_N, Const.OPEN_1_N)==true)
-        {
+        if(SPUtil.getBoolean(Const.KEY_ISOPEN1_N, Const.OPEN_1_N)==true) {
             cb_1_Nopen.setChecked(true);
-        }
-        else
-        {
+        } else {
             cb_1_Nopen.setChecked(false);
         }
 
@@ -179,32 +160,23 @@ public class MySettingActivity extends FragmentActivity implements View.OnClickL
 
 
         //活体
-        if(cb_choice.isChecked()==true)
-        {
+        if(cb_choice.isChecked()==true) {
             SPUtil.putBoolean(Const.KEY_ISOPENLIVE,true);
-        }
-        else
-        {
+        } else {
             SPUtil.putBoolean(Const.KEY_ISOPENLIVE,false);
         }
 
         //1：1
-        if(cb_1_1open.isChecked()==true)
-        {
+        if(cb_1_1open.isChecked()==true) {
             SPUtil.putBoolean(Const.KEY_ISOPEN1_1,true);
-        }
-        else
-        {
+        } else {
             SPUtil.putBoolean(Const.KEY_ISOPEN1_1,false);
         }
 
         //1：n
-        if(cb_1_Nopen.isChecked()==true)
-        {
+        if(cb_1_Nopen.isChecked()==true) {
             SPUtil.putBoolean(Const.KEY_ISOPEN1_N,true);
-        }
-        else
-        {
+        } else {
             SPUtil.putBoolean(Const.KEY_ISOPEN1_N,false);
         }
 
@@ -217,8 +189,7 @@ public class MySettingActivity extends FragmentActivity implements View.OnClickL
         Const.WEB_UPDATE=true;
     }
 
-    private void Amendsuccess()
-    {
+    private void Amendsuccess() {
         //修改成功
         DialogInterface.OnCancelListener onCancelListener ;
         AlertDialog dialog =new AlertDialog.Builder(MySettingActivity.this)
@@ -248,12 +219,10 @@ public class MySettingActivity extends FragmentActivity implements View.OnClickL
 
     // 修改设置（IP�?????
     public static int updateSetting(String deviceip,Context context) {
-        if(deviceip.equals(CameraHelp.getIpAddress()))
-        {
+        if(deviceip.equals(CameraHelp.getIpAddress())) {
             return 1;
         }
-        if(deviceip.equals(""))
-        {
+        if(deviceip.equals("")) {
             return 2;
         }
         String[] Sip = deviceip.split("\\.");
@@ -293,6 +262,9 @@ public class MySettingActivity extends FragmentActivity implements View.OnClickL
                 break;
             case R.id.btn_Refresh:
                 initData();
+                break;
+            case R.id.btn_Back:
+                finish();
                 break;
             default:
                 break;
