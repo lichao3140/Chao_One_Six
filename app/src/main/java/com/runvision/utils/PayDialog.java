@@ -10,6 +10,7 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import com.runvision.g69a_sn.MainActivity;
 import com.runvision.g69a_sn.R;
 
 
@@ -89,6 +90,7 @@ public class PayDialog extends Dialog implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.dialog_close:
+                MainActivity.isOpenOneVsMore = true;
                 dismiss();
                 break;
         }

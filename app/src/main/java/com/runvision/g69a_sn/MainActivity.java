@@ -132,7 +132,7 @@ public class MainActivity extends Activity implements NetWorkStateReceiver.INetS
     private boolean bStop = false;
 
     private boolean oneVsMoreThreadStauts = false;
-    private boolean isOpenOneVsMore = true;
+    public static boolean isOpenOneVsMore = true;
     private boolean Infra_red=true;
     private ImageStack imageStack;
 
@@ -799,10 +799,16 @@ public class MainActivity extends Activity implements NetWorkStateReceiver.INetS
         showHttpUrl = findViewById(R.id.showHttpUrl);
 
         home_set = findViewById(R.id.home_set);
-        home_set.setOnClickListener(view -> createPayDialog("set"));
+        home_set.setOnClickListener(view -> {
+            createPayDialog("set");
+            isOpenOneVsMore = false;
+        });
 
         home_register = findViewById(R.id.home_reg);
-        home_register.setOnClickListener(view -> createPayDialog("reg"));
+        home_register.setOnClickListener(view -> {
+            createPayDialog("reg");
+            isOpenOneVsMore = false;
+        });
     }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     private void stratThread() {
