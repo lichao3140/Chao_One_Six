@@ -29,7 +29,7 @@ public class FaceLibCore {
         int activeCode = faceEngine.active(context, Const.APP_ID, Const.SDK_KEY);
         if((activeCode == ErrorInfo.MOK) || (activeCode == ErrorInfo.MERR_ASF_ALREADY_ACTIVATED)) {
             int afCode = faceEngine.init(context, FaceEngine.ASF_DETECT_MODE_IMAGE, FaceEngine.ASF_OP_0_HIGHER_EXT,
-                    16, 20, FaceEngine.ASF_FACE_RECOGNITION|FaceEngine.ASF_FACE_DETECT | FaceEngine.ASF_AGE | FaceEngine.ASF_FACE3DANGLE | FaceEngine.ASF_GENDER);
+                    16, 20, FaceEngine.ASF_FACE_RECOGNITION|FaceEngine.ASF_FACE_DETECT | FaceEngine.ASF_AGE | FaceEngine.ASF_FACE3DANGLE | FaceEngine.ASF_GENDER | FaceEngine.ASF_LIVENESS);
             if (afCode != ErrorInfo.MOK) {
                 Log.e(TAG, "引擎初始化失败,错误码:" + afCode);
                 faceEngine = null;
