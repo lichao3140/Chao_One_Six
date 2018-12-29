@@ -59,8 +59,8 @@ public class Const {
      */
     public static final int PRE_WIDTH = 640;
 
-    public static final String APP_ID = "J3Yscp63XC1M1ut6Fk6DguTeTqKPKJZRZ3BukyHnuE5E";
-    public static final String SDK_KEY = "DMco6iZeeVhdeXJKQUENi5KAa64f5SYCgzyVDSELc1dv";
+    public static final String APP_ID = "J3Yscp63XC1M1ut6Fk6DguUWbe9ZrnF8VyHe4KKRvw43";
+    public static final String SDK_KEY = "3bw37uNsBhbYveepprt6L4WoGrKnBgu7WQQMqnhFiJB4";
 
     //记录人脸定位算法是否成功
     public static boolean afdInit = false;
