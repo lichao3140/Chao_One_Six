@@ -11,7 +11,6 @@ import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
-
 import com.runvision.bean.FaceLibCore;
 import com.runvision.core.Const;
 import com.runvision.db.Admin;
@@ -21,7 +20,6 @@ import com.runvision.utils.CameraHelp;
 import com.runvision.utils.FileUtils;
 import com.runvision.utils.LogToFile;
 import com.runvision.utils.SPUtil;
-
 import java.io.File;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -31,7 +29,6 @@ import java.util.Map;
 /**
  * Created by Administrator on 2018/6/5.
  */
-
 public class MyApplication extends Application {
     private String TAG = "MyApplication";
 
@@ -67,7 +64,6 @@ public class MyApplication extends Application {
         LogToFile.init(this);
         String serlia = getSerialNumber();
        if (serlia.equals("") || serlia.length() < 4 || !serlia.substring(0, 4).equals("R50A")) {
-            LogToFile.e(TAG,"该设备没有序列号");
             finishActivity();
         }
         //Log.i("Gavin_1114","路径："+context.getFilesDir().listFiles().);
