@@ -82,7 +82,27 @@ public class MyApplication extends Application {
         if (ret == 0) {
             Toast.makeText(this, "算法初始化成功", Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(this, "算法初始化失败", Toast.LENGTH_SHORT).show();
+            if (ret == 90113) {
+                Toast.makeText(this, "算法初始化失败,SDK 激活失败,请打开读写权限", Toast.LENGTH_LONG).show();
+            } else if (ret == 90119) {
+                Toast.makeText(this, "算法初始化失败,唯一标识不匹配", Toast.LENGTH_LONG).show();
+            } else if (ret == 90121) {
+                Toast.makeText(this, "算法初始化失败,活体检测功能已过期", Toast.LENGTH_LONG).show();
+            } else if (ret == 90129) {
+                Toast.makeText(this, "算法初始化失败,激活数据被破坏,请删除激活文件,重新进行激活", Toast.LENGTH_LONG).show();
+            } else if (ret == 90130) {
+                Toast.makeText(this, "算法初始化失败,服务端未知错误", Toast.LENGTH_LONG).show();
+            } else if (ret == 94209) {
+                Toast.makeText(this, "算法初始化失败,无法解析主机地址", Toast.LENGTH_LONG).show();
+            } else if (ret == 94210) {
+                Toast.makeText(this, "算法初始化失败,无法连接服务器", Toast.LENGTH_LONG).show();
+            } else if (ret == 94211) {
+                Toast.makeText(this, "算法初始化失败,网络连接超时", Toast.LENGTH_LONG).show();
+            } else if (ret == 94212) {
+                Toast.makeText(this, "算法初始化失败,网络未知错误", Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(this, "算法初始化失败" + ret, Toast.LENGTH_LONG).show();
+            }
         }
         faceProvider=new FaceProvider(this);
         if (faceProvider.querAdminSize() == 0) {
