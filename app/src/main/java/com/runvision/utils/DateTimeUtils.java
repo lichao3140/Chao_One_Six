@@ -28,5 +28,24 @@ public class DateTimeUtils {
 		long mTime = Long.parseLong(time.substring(0, time.length() - 3));
 		return mTime;
 	}
+
+	public static long getLongTime() {
+		Date date = new Date();
+		long dateTime = date.getTime();
+		return dateTime;
+	}
+
+	/**
+	 * "yyyy-MM-dd HH:mm:ss"
+	 * 把long 转换成 日期 再转换成String类型
+	 * @param dateFormat
+	 * @param millSec
+	 * @return
+	 */
+	public static String transferLongToDate(String dateFormat, Long millSec) {
+		SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
+		Date date = new Date(millSec);
+		return sdf.format(date);
+	}
 }
 

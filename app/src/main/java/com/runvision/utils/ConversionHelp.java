@@ -376,6 +376,21 @@ public class ConversionHelp {
     }
 
     /**
+     * 获取当前时间 变成字节流
+     *
+     * @return
+     */
+    public static byte[] getTimeByte(Long longTime) {
+        int time = Integer.parseInt(String.valueOf(longTime)); ;
+        byte[] bytes = new byte[4];
+        for (int i = bytes.length - 1; i >= 0; i--) {
+            bytes[i] = (byte) (time & 0xFF);
+            time >>= 8;
+        }
+        return bytes;
+    }
+
+    /**
      * 判断网络是否连接
      *
      * @param context

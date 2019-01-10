@@ -37,11 +37,14 @@ import com.arcsoft.face.FaceSimilar;
 import com.arcsoft.face.LivenessInfo;
 import com.mylhyl.circledialog.CircleDialog;
 import com.runvision.bean.AppData;
+import com.runvision.bean.DaoSession;
 import com.runvision.bean.FaceInfoss;
 import com.runvision.bean.ImageStack;
+import com.runvision.bean.SocketRecordDao;
 import com.runvision.broadcast.NetWorkStateReceiver;
 import com.runvision.core.Const;
 import com.runvision.db.Record;
+import com.runvision.db.SocketDataHelper;
 import com.runvision.db.User;
 import com.runvision.frament.DeviceSetFrament;
 import com.runvision.gpio.GPIOHelper;
@@ -143,7 +146,7 @@ public class MainActivity extends AppCompatActivity implements NetWorkStateRecei
     private String TAG = "Main";
 
     private MyApplication application;
-    // ----------------------------------------读卡器参数-------------------------------------------------
+    // ----------------------------------------读卡器参数-------------------------------------------
     private static final int VID = 1024; // IDR VID
     private static final int PID = 50010; // IDR PID
      private IDCardReader idCardReader = null;
@@ -151,9 +154,7 @@ public class MainActivity extends AppCompatActivity implements NetWorkStateRecei
     private boolean ReaderCardFlag = true;
     // -----------------------------------------end------------------------------------------------
 
-
-
-    // -----------------------------------------这个按钮是设置或以开关的------------------------------------------------
+    // -----------------------------------------这个按钮是设置或以开关的----------------------------
     //这个按钮是设置或以开关的
     private NetWorkStateReceiver receiver;
     private TextView socket_status;
@@ -163,8 +164,6 @@ public class MainActivity extends AppCompatActivity implements NetWorkStateRecei
     private TextView showHttpUrl;
     private ServerManager serverManager;
     private int socketErrorNum = 0;
-
-
 
     private Dialog dialog = null;
     private int templatenum=0;
@@ -176,6 +175,7 @@ public class MainActivity extends AppCompatActivity implements NetWorkStateRecei
 
     private Boolean SysTimeflag=true;
 
+    public static SocketRecordDao socketRecordDao;
     private List<User> mList;
 
   //  private MyBroadcastReceiver myBroadcastReceiver = new MyBroadcastReceiver();
@@ -585,6 +585,8 @@ public class MainActivity extends AppCompatActivity implements NetWorkStateRecei
                         }
                         heartBeatThread = new HeartBeatThread(socketThread);
                         heartBeatThread.start();
+                        // VMS续传
+                        SocketDataHelper.beginSocket(socketThread);
                     } else {
                         socket_status.setBackgroundResource(R.drawable.socket_false);
                         LogToFile.i("MainActivity", "socket登录失败");
@@ -668,9 +670,10 @@ public class MainActivity extends AppCompatActivity implements NetWorkStateRecei
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);//去掉标题栏
         setContentView(R.layout.activity_main);
         // 全屏代码
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         hideBottomUIMenu();
+        DaoSession daoSession = application.getDaoSession();
+        socketRecordDao = daoSession.getSocketRecordDao();
         initView();
         mContext=this;
 
@@ -1137,29 +1140,23 @@ public class MainActivity extends AppCompatActivity implements NetWorkStateRecei
     /**
      * 1vsn显示对比后成功是否窗口
      */
-    ///////////////////////////////////////////////////////////////////////////////// 1vsn显示对比后成功是否窗口
     private void showAlert() {
-
         if((isOpenOneVsMore!=false)||(Const.DELETETEMPLATE==false)) {
             if (AppData.getAppData().getCompareScore() <= SPUtil.getFloat(Const.KEY_ONEVSMORESCORE, Const.ONEVSMORE_SCORE) && Const.ONE_VS_MORE_TIMEOUT_NUM >= Const.ONE_VS_MORE_TIMEOUT_MAXNUM) {
                 if(promptshow_xml.getVisibility()!=View.VISIBLE) {
                     Const.ONE_VS_MORE_TIMEOUT_NUM = 0;
-                    if(SPUtil.getBoolean(Const.KEY_ISOPEN1_1, Const.OPEN_1_1))
-                    {
+                    if (SPUtil.getBoolean(Const.KEY_ISOPEN1_1, Const.OPEN_1_1)) {
                         ShowPromptMessage("请刷身份证", 1);
-                    }else if(MyApplication.mList.size()!=0)
-                    {
+                    } else if(MyApplication.mList.size()!=0) {
                         ShowPromptMessage("   验证失败" +"      "+
                                 "    请联系管理员", 5);
                     }
-
                 }
-            } else if (AppData.getAppData().getCompareScore() > SPUtil.getFloat(Const.KEY_ONEVSMORESCORE, Const.ONEVSMORE_SCORE)){//&&AppData.getAppData().getNFaceBmp()!=null) {
-
+            } else if (AppData.getAppData().getCompareScore() > SPUtil.getFloat(Const.KEY_ONEVSMORESCORE, Const.ONEVSMORE_SCORE)) {
                 String sdCardDir=null;
                 Const.ONE_VS_MORE_TIMEOUT_NUM = 0;
-               // String snapImageID = IDUtils.genImageName();
-               // FileUtils.saveFile(AppData.getAppData().getNFaceBmp(), snapImageID,TestDate.DGetSysTime()+"_Face");
+//                String snapImageID = IDUtils.genImageName();
+//                FileUtils.saveFile(AppData.getAppData().getNFaceBmp(), snapImageID,TestDate.DGetSysTime()+"_Face");
                 User user = MyApplication.faceProvider.getUserByUserId(AppData.getAppData().getUser().getId());
                 AppData.getAppData().setUser(user);
                 if(user.getTemplateImageID()!=null) {
@@ -1183,34 +1180,23 @@ public class MainActivity extends AppCompatActivity implements NetWorkStateRecei
                 user.setRecord(record);
                 MyApplication.faceProvider.addRecord(user);
 
-                if(user.getType().equals("黑名单"))
-                {
+                if (user.getType().equals("黑名单")) {
                     ShowPromptMessage("黑名单", 3);
-                   // return;
-                }else
-                {
+                } else {
                     GPIOHelper.openDoor(true);
-                    mHandler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            GPIOHelper.openDoor(false);
-                        }
-                    }, SPUtil.getInt(Const.KEY_OPENDOOR, Const.CLOSE_DOOR_TIME)*1000);
+                    mHandler.postDelayed(() -> GPIOHelper.openDoor(false), SPUtil.getInt(Const.KEY_OPENDOOR, Const.CLOSE_DOOR_TIME)*1000);
                     oneVsMoreView.setVisibility(View.VISIBLE);
                     playMusic(R.raw.pleasepass);
-                    mHandler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            oneVsMoreView.setVisibility(View.GONE);
-                        }
-                    }, 1000);
+                    mHandler.postDelayed(() -> oneVsMoreView.setVisibility(View.GONE), 1000);
 
                 }
 
-
+                //发送到VMS
                 if (socketThread != null) {
                     SendData.sendComperMsgInfo(socketThread, true, Const.TYPE_ONEVSMORE);
                 } else {
+                    //记录未上传比对结果到数据库
+                    SocketDataHelper.addSocketRecord(String.valueOf(DateTimeUtils.getLongTime()), user.getRecord().getSnapImageID(), user.getTemplateImageID());
                     AppData.getAppData().clean();
                 }
 
@@ -1228,6 +1214,8 @@ public class MainActivity extends AppCompatActivity implements NetWorkStateRecei
     ///////////////////////////////////////////////////////////////////////////////// 1v1显示对比后成功是否窗口
     private void showAlertDialog() {
         String str="";
+        //保存抓拍图片
+        String snapImageID = IDUtils.genImageName();
         cardBmp_view.setImageBitmap(AppData.getAppData().getCardBmp());
         idcard_Bmp.setImageBitmap(AppData.getAppData().getCardBmp());
         card_name.setText(AppData.getAppData().getName());
@@ -1242,7 +1230,7 @@ public class MainActivity extends AppCompatActivity implements NetWorkStateRecei
                 + AppData.getAppData().getCardNo().substring(16, 18));
         card_nation.setText(AppData.getAppData().getNation());
         faceBmp_view.setScaleType(ImageView.ScaleType.FIT_CENTER);
-     /*   if (AppData.getAppData().getoneCompareScore() == 0) {
+     if((AppData.getAppData().getoneCompareScore() == 0)|| (AppData.getAppData().getoneCompareScore() <  SPUtil.getFloat(Const.KEY_CARDSCORE,Const.ONEVSONE_SCORE)&&AppData.getAppData().getOneFaceBmp() != null)) {
             str="失败";
             isSuccessComper.setImageResource(R.mipmap.icon_sb);
             if (AppData.getAppData().getOneFaceBmp() == null) {
@@ -1250,42 +1238,6 @@ public class MainActivity extends AppCompatActivity implements NetWorkStateRecei
                 faceBmp_view.setScaleType(ImageView.ScaleType.FIT_XY);
             } else {
                 faceBmp_view.setImageBitmap(AppData.getAppData().getOneFaceBmp());
-                //保存抓拍图片
-                String snapImageID = IDUtils.genImageName();
-                FileUtils.saveFile(AppData.getAppData().getOneFaceBmp(), snapImageID,TestDate.DGetSysTime()+"_Face");
-                //保存身份证图片
-                String cardImageID = snapImageID + "_card";
-                FileUtils.saveFile(AppData.getAppData().getCardBmp(), cardImageID,TestDate.DGetSysTime()+"_Card");
-
-                Record record = new Record(AppData.getAppData().getoneCompareScore() + "", str, Environment.getExternalStorageDirectory() + "/FaceAndroid/"+TestDate.DGetSysTime()+"_Face"+"/"+snapImageID, "人证");
-                User user = new User(AppData.getAppData().getName(), "无", AppData.getAppData().getSex(), 0, "无", AppData.getAppData().getCardNo(), Environment.getExternalStorageDirectory() + "/FaceAndroid/"+TestDate.DGetSysTime()+"_Card"+"/"+cardImageID, DateTimeUtils.getTime());
-                user.setRecord(record);
-                MyApplication.faceProvider.addRecord(user);
-            }
-            playMusic(R.raw.error);
-
-            oneVsMoreView.setVisibility(View.GONE);
-            alert.setVisibility(View.VISIBLE);
-
-        } else*/ if((AppData.getAppData().getoneCompareScore() == 0)|| (AppData.getAppData().getoneCompareScore() <  SPUtil.getFloat(Const.KEY_CARDSCORE,Const.ONEVSONE_SCORE)&&AppData.getAppData().getOneFaceBmp() != null)) {
-            str="失败";
-            isSuccessComper.setImageResource(R.mipmap.icon_sb);
-            if (AppData.getAppData().getOneFaceBmp() == null) {
-                faceBmp_view.setImageResource(R.mipmap.tx);
-                faceBmp_view.setScaleType(ImageView.ScaleType.FIT_XY);
-              /*  mHandler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        oneVsMoreView.setVisibility(View.GONE);
-                        alert.setVisibility(View.VISIBLE);
-                        playMusic(R.raw.error);
-                    }
-
-                }, 1000);*/
-            } else {
-                faceBmp_view.setImageBitmap(AppData.getAppData().getOneFaceBmp());
-                //保存抓拍图片
-                String snapImageID = IDUtils.genImageName();
                 FileUtils.saveFile(AppData.getAppData().getOneFaceBmp(), snapImageID, TestDate.DGetSysTime() + "_Face");
                 //保存身份证图片
                 String cardImageID = snapImageID + "_card";
@@ -1309,15 +1261,8 @@ public class MainActivity extends AppCompatActivity implements NetWorkStateRecei
             faceBmp_view.setImageBitmap(AppData.getAppData().getOneFaceBmp());
             GPIOHelper.openDoor(true);
 
-                mHandler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        GPIOHelper.openDoor(false);
-                    }
-                }, SPUtil.getInt(Const.KEY_OPENDOOR, Const.CLOSE_DOOR_TIME) * 1000);
+                mHandler.postDelayed(() -> GPIOHelper.openDoor(false), SPUtil.getInt(Const.KEY_OPENDOOR, Const.CLOSE_DOOR_TIME) * 1000);
 
-                //保存抓拍图片
-                String snapImageID = IDUtils.genImageName();
                 if(AppData.getAppData().getOneFaceBmp()!=null) {
                     FileUtils.saveFile(AppData.getAppData().getOneFaceBmp(), snapImageID,TestDate.DGetSysTime()+"_Face");
                 }
@@ -1333,12 +1278,7 @@ public class MainActivity extends AppCompatActivity implements NetWorkStateRecei
                 MyApplication.faceProvider.addRecord(user);
 
 
-            mHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    GPIOHelper.openDoor(false);
-                }
-            }, 1000);
+            mHandler.postDelayed(() -> GPIOHelper.openDoor(false), 1000);
                 oneVsMoreView.setVisibility(View.GONE);
                 alert.setVisibility(View.VISIBLE);
 
@@ -1353,6 +1293,8 @@ public class MainActivity extends AppCompatActivity implements NetWorkStateRecei
             if (socketThread != null) {
                 SendData.sendComperMsgInfo(socketThread, false, Const.TYPE_CARD);
             } else {
+                //记录未上传比对结果到数据库
+                SocketDataHelper.addSocketRecord(String.valueOf(DateTimeUtils.getLongTime()), snapImageID, AppData.getAppData().getCardNo());
                 AppData.getAppData().clean();
             }
         }
@@ -1361,6 +1303,8 @@ public class MainActivity extends AppCompatActivity implements NetWorkStateRecei
             if (socketThread != null) {
                 SendData.sendComperMsgInfo(socketThread, true, Const.TYPE_CARD);
             } else {
+                //记录未上传比对结果到数据库
+                SocketDataHelper.addSocketRecord(String.valueOf(DateTimeUtils.getLongTime()), snapImageID, AppData.getAppData().getCardNo());
                 AppData.getAppData().clean();
             }
         }
@@ -1403,7 +1347,6 @@ public class MainActivity extends AppCompatActivity implements NetWorkStateRecei
     /**
      * 1：N比对操作线程
      */
-    ///////////////////////////////////////////////////////////////////////////////// 1：N比对操作线程
     class OneVsMoreThread extends Thread {
         private FaceInfoss info;
         FaceFeature face;
@@ -1425,31 +1368,6 @@ public class MainActivity extends AppCompatActivity implements NetWorkStateRecei
                 float fenshu = SPUtil.getFloat(Const.KEY_ONEVSMORESCORE,Const.ONEVSMORE_SCORE);
                int ret = MyApplication.mFaceLibCore.FaceFeatureExtract(info.getDes(), 480, 640, info.getFace(), face);
                  if (ret == 0) {
-
-
-                   /* Bitmap frontbmp =  Const.frontmap;
-                    if(frontbmp!=null) {
-                        List<com.arcsoft.face.FaceInfo> frontresult = new ArrayList<>();
-                        FaceFeature frontface = new FaceFeature();
-                        frontbmp =CameraHelp.alignBitmapForNv21(frontbmp);//裁剪
-                        int w = frontbmp.getWidth();
-                        int h = frontbmp.getHeight();
-                        byte[] frontnv21 = CameraHelp.bitmapToNv21(frontbmp, w, h);//转nv21
-                        MyApplication.mFaceLibCore.FaceDetection(frontnv21, 480, 640, frontresult);
-                        ret = MyApplication.mFaceLibCore.FaceFeatureExtract(frontnv21, 480, 640, frontresult.get(0), frontface);
-                        if (ret == 0) {
-                            FaceSimilar frontscore = new FaceSimilar();
-                            ret = MyApplication.mFaceLibCore.FacePairMatching(frontface, face, frontscore);
-                            if (frontscore.getScore() >= fenshu) {
-                                Const.comparison = true;
-                            }else
-                            {
-                                Const.comparison = false;
-                            }
-                        }
-                    }*/
-
-
                     if(score==null) {
                         score = new FaceSimilar();
                     }
